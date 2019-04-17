@@ -1,10 +1,13 @@
 package dev.collegue.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class Collegue {
 
 	private String matricule;
 	private String nom;
-	private String prenom;
+	private String prenoms;
+	@JsonIgnore
 	private String email;
 	private String dateDeNaissance;
 	private String photoUrl;
@@ -12,16 +15,14 @@ public class Collegue {
 	public Collegue() {
 	}
 
-	public Collegue(String matricule, String nom, String prenom, String email, String dateDeNaissance, String photoUrl) {
+	public Collegue(String matricule, String nom, String prenoms, String email, String dateDeNaissance, String photoUrl) {
 		this.matricule = matricule;
 		this.nom = nom;
-		this.prenom = prenom;
+		this.prenoms = prenoms;
 		this.email = email;
 		this.dateDeNaissance = dateDeNaissance;
 		this.photoUrl = photoUrl;
 	}
-
-
 
 	public String getMatricule() {
 		return matricule;
@@ -39,12 +40,12 @@ public class Collegue {
 		this.nom = nom;
 	}
 
-	public String getPrenom() {
-		return prenom;
+	public String getPrenoms() {
+		return prenoms;
 	}
 
-	public void setPrenom(String prenom) {
-		this.prenom = prenom;
+	public void setPrenoms(String prenoms) {
+		this.prenoms = prenoms;
 	}
 
 	public String getEmail() {
