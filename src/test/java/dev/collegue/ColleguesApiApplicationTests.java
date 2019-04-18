@@ -1,9 +1,12 @@
 package dev.collegue;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -13,60 +16,102 @@ import org.springframework.test.context.junit4.SpringRunner;
 import dev.collegue.model.Collegue;
 import dev.collegue.service.CollegueService;
 import exception.CollegueInvalideException;
+import exception.CollegueNonTrouveException;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class ColleguesApiApplicationTests {
 
 	private CollegueService service;
+	private Collegue collegue;
 	
 	@Before
 	public void setUp(){
 		service = new CollegueService();
+		collegue = new Collegue(null, "Tartempion", "Toto", "toto@tartempion.com", LocalDate.of(1970, 01, 30), "http://toto.com/toto.jpeg");
 	}
 	
 	
 	@Test
-	public void testAjouterUnCollegueOk() throws CollegueInvalideException {
-		Collegue collegueAAjouter = new Collegue(null, "Tartempion", "Toto", "toto@tartempion.com", LocalDate.of(1970, 01, 30), "http://toto.com/toto.jpeg");
-		Collegue actualCollegue = service.ajouterUnCollegue(collegueAAjouter);
+	public void testAjouterUnCollegueOK() throws CollegueInvalideException {
+		Collegue actualCollegue = service.ajouterUnCollegue(collegue);
 		Assert.assertNotNull("Le matricule du collègue ajouté n'est pas valorisé", actualCollegue.getMatricule());
 	}
 	
 	@Test(expected=CollegueInvalideException.class)
-	public void testAjouterUnCollegueKoCarNomTropCourt() throws CollegueInvalideException{
-		Collegue collegueAAjouter = new Collegue(null, "A", "Toto", "toto@tartempion.com",  LocalDate.of(1970, 01, 30), "http://toto.com/toto.jpeg");
-		service.ajouterUnCollegue(collegueAAjouter);
+	public void testAjouterUnCollegueKOCarNomTropCourt() throws CollegueInvalideException{
+		collegue.setNom("T");
+		service.ajouterUnCollegue(collegue);
 	}
 	
 	@Test(expected=CollegueInvalideException.class)
-	public void testAjouterUnCollegueKoCarPrenomTropCourt() throws CollegueInvalideException{
-		Collegue collegueAAjouter = new Collegue(null, "Tartempion", "T", "toto@tartempion.com",  LocalDate.of(1970, 01, 30), "http://toto.com/toto.jpeg");
-		service.ajouterUnCollegue(collegueAAjouter);
+	public void testAjouterUnCollegueKOCarPrenomTropCourt() throws CollegueInvalideException{
+		collegue.setPrenoms("T");
+		service.ajouterUnCollegue(collegue);
 	}
 	
 	@Test(expected=CollegueInvalideException.class)
-	public void testAjouterUnCollegueKoCarEmailSansArobade() throws CollegueInvalideException{
-		Collegue collegueAAjouter = new Collegue(null, "Tartempion", "Toto", "tototartempion.com",  LocalDate.of(1970, 01, 30), "http://toto.com/toto.jpeg");
-		service.ajouterUnCollegue(collegueAAjouter);
+	public void testAjouterUnCollegueKOCarEmailSansArobade() throws CollegueInvalideException{
+		collegue.setEmail("tototartempion.com");
+		service.ajouterUnCollegue(collegue);
 	}
 	
 	@Test(expected=CollegueInvalideException.class)
-	public void testAjouterUnCollegueKoCarEmailTropCourt() throws CollegueInvalideException{
-		Collegue collegueAAjouter = new Collegue(null, "Tartempion", "Toto", "t@",  LocalDate.of(1970, 01, 30), "http://toto.com/toto.jpeg");
-		service.ajouterUnCollegue(collegueAAjouter);
+	public void testAjouterUnCollegueKOCarEmailTropCourt() throws CollegueInvalideException{
+		collegue.setEmail("t@");
+		service.ajouterUnCollegue(collegue);
 	}
 	
 	@Test(expected=CollegueInvalideException.class)
-	public void testAjouterUnCollegueKoCarPhotoUrlNeCommencePasParHttp() throws CollegueInvalideException{
-		Collegue collegueAAjouter = new Collegue(null, "Tartempion", "Toto", "toto@tartempion.com",  LocalDate.of(1970, 01, 30), "ftp://toto.com/toto.jpeg");
-		service.ajouterUnCollegue(collegueAAjouter);
+	public void testAjouterUnCollegueKOCarPhotoUrlNeCommencePasParHttp() throws CollegueInvalideException{
+		collegue.setPhotoUrl("ftp://toto.com/toto.jpeg");
+		service.ajouterUnCollegue(collegue);
 	}
 	
 	@Test(expected=CollegueInvalideException.class)
-	public void testAjouterUnCollegueKoCarMoinsDe18Ans() throws CollegueInvalideException{
-		Collegue collegueAAjouter = new Collegue(null, "Tartempion", "Toto", "toto@tartempion.com",  LocalDate.of(2017, 01, 30), "http://toto.com/toto.jpeg");
-		service.ajouterUnCollegue(collegueAAjouter);
+	public void testAjouterUnCollegueKOCarMoinsDe18Ans() throws CollegueInvalideException{
+		collegue.setDateDeNaissance(LocalDate.now());
+		service.ajouterUnCollegue(collegue);
+	}
+	
+	@Test
+	public void testModifierEmailOK() throws CollegueInvalideException, CollegueNonTrouveException{
+		service.ajouterUnCollegue(collegue);
+		String expected = "toto@nouvelemail.com";
+		service.modifierEmail(collegue.getMatricule(), expected);
+		
+		String actual = collegue.getEmail();
+		Assert.assertThat("L'email n'a pas été modifié en "+expected, actual, Matchers.is(expected));
+	}
+	
+	@Test(expected=CollegueInvalideException.class)
+	public void testModifierEmailKOCollegueInvalid() throws CollegueInvalideException, CollegueNonTrouveException{
+		collegue.setEmail("a");
+		service.ajouterUnCollegue(collegue);
+		service.modifierEmail(collegue.getMatricule(), "doesNotMatterSinceException@dummy.com");
+	}
+	
+	@Test(expected=CollegueNonTrouveException.class)
+	public void testModifierEmailKOCollegueNonTrouve() throws CollegueInvalideException, CollegueNonTrouveException{
+		service.ajouterUnCollegue(collegue);
+		service.modifierEmail("ceMatriculeNExistePas", "doesNotMatterSinceException@dummy.com");
+	}
+	
+	@Test
+	public void testModifierPhotoUrlOK() throws CollegueInvalideException, CollegueNonTrouveException {		
+		Collegue collegue = new Collegue(null,"Tartempion", "Toto", "toto@tartempion.com",  LocalDate.of(1999, 01, 30), "http://toto.com/toto.jpeg");
+		service.ajouterUnCollegue(collegue);
+		String expected = "http://unnouvelUrl.com";
+		service.modifierPhotoUrl(collegue.getMatricule(), expected);
+		String actual = collegue.getPhotoUrl();
+		Assert.assertThat("L'url de la photo n'a pas été modifié en "+expected, actual, Matchers.is(expected));
+	}
+	
+	@Test(expected=CollegueInvalideException.class)
+	public void testModifierPhotoUrlKOCollegueInvalide() throws CollegueInvalideException, CollegueNonTrouveException {		
+		collegue.setPhotoUrl("ftp://erogijeroj.com");
+		service.ajouterUnCollegue(collegue);
+		service.modifierPhotoUrl(collegue.getMatricule(), "http://nouvelurl.com");
 	}
 
 }

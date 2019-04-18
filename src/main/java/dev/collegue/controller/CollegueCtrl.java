@@ -1,18 +1,12 @@
 package dev.collegue.controller;
 
-import java.io.FileNotFoundException;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.validator.constraints.URL;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,7 +26,8 @@ import exception.CollegueNonTrouveException;
 @RequestMapping("/collegues")
 public class CollegueCtrl {
 
-	private CollegueService service = new CollegueService();
+	@Autowired
+	private CollegueService service;
 
 	@GetMapping
 	private List<String> rechercherParNom(@RequestParam String nom) {
