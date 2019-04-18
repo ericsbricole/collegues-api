@@ -1,5 +1,7 @@
 package dev.collegue.model;
 
+import java.time.LocalDate;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class Collegue {
@@ -7,15 +9,14 @@ public class Collegue {
 	private String matricule;
 	private String nom;
 	private String prenoms;
-	@JsonIgnore
 	private String email;
-	private String dateDeNaissance;
+	private LocalDate dateDeNaissance;
 	private String photoUrl;
 
 	public Collegue() {
 	}
 
-	public Collegue(String matricule, String nom, String prenoms, String email, String dateDeNaissance, String photoUrl) {
+	public Collegue(String matricule, String nom, String prenoms, String email, LocalDate dateDeNaissance, String photoUrl) {
 		this.matricule = matricule;
 		this.nom = nom;
 		this.prenoms = prenoms;
@@ -56,11 +57,11 @@ public class Collegue {
 		this.email = email;
 	}
 
-	public String getDateDeNaissance() {
+	public LocalDate getDateDeNaissance() {
 		return dateDeNaissance;
 	}
 
-	public void setDateDeNaissance(String dateDeNaissance) {
+	public void setDateDeNaissance(LocalDate dateDeNaissance) {
 		this.dateDeNaissance = dateDeNaissance;
 	}
 
@@ -71,6 +72,5 @@ public class Collegue {
 	public void setPhotoUrl(String photoUrl) {
 		this.photoUrl = photoUrl;
 	}
-
 	
 }

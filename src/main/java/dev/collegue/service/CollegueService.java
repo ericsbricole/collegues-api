@@ -1,13 +1,16 @@
 package dev.collegue.service;
 
-import java.util.ArrayList;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+
 import dev.collegue.model.Collegue;
+import exception.CollegueInvalideException;
 import exception.CollegueNonTrouveException;
 
 public class CollegueService {
@@ -16,12 +19,12 @@ public class CollegueService {
 
 	public CollegueService() {
 		String matricule = UUID.randomUUID().toString();
-		data.put(matricule, new Collegue(matricule, "Astier", "Alexandre", "astier@kaamelot.com", "10-01-2017", null));
+		data.put(matricule, new Collegue(matricule, "Astier", "Alexandre", "astier@kaamelot.com", LocalDate.of(1980, 01, 01), "http:/kaamelot.com"));
 		String matricule2 = UUID.randomUUID().toString();
 		data.put(matricule2,
-				new Collegue(matricule2, "Dark", "Vador", "vador@blackstar.com", "10-01-1997", "blackStar.jpeg"));
+				new Collegue(matricule2, "Dark", "Vador", "vador@blackstar.com", LocalDate.of(1970, 02, 02), "http://blackStar.jpeg"));
 		String matricule3 = UUID.randomUUID().toString();
-		data.put(matricule3, new Collegue(matricule3, "Rossi", "Oddet", "rossi@diginamic.com", "10-01-1987", null));
+		data.put(matricule3, new Collegue(matricule3, "Rossi", "Oddet", "rossi@diginamic.com", LocalDate.of(1990, 03, 03), "http://diginamic.com"));
 	}
 
 	public List<Collegue> rechercherParNom(String nomRecherche) {
@@ -34,6 +37,22 @@ public class CollegueService {
 			throw new CollegueNonTrouveException("Pas de collegue trouvé avec le matricule " + matriculeRecherche);
 		else
 			return collegue;
+	}
+	
+	public Collegue ajouterUnCollegue(Collegue collegueAAjouter) throws CollegueInvalideException {
+		if (collegueAAjouter.getNom() == null || collegueAAjouter.getNom().length() < 2 || collegueAAjouter.getPrenoms() == null || collegueAAjouter.getPrenoms().length() < 2 )
+			throw new CollegueInvalideException("Le nom et les prénoms doivent avoir au moins 2 caractères");
+		if (collegueAAjouter.getEmail() == null || collegueAAjouter.getEmail().length() < 3 || StringUtils.containsNone(collegueAAjouter.getEmail(), "@"))
+			throw new CollegueInvalideException("L'email doit avoir au moins 3 caractères et un \"@\"");
+		if ( collegueAAjouter.getPhotoUrl() == null || ! StringUtils.startsWith(collegueAAjouter.getPhotoUrl(), "http") )
+			throw new CollegueInvalideException("L'url de la photo doit commencer par http");
+		if ( collegueAAjouter.getDateDeNaissance() == null || LocalDate.now().getYear() - collegueAAjouter.getDateDeNaissance().getYear() < 18 )
+			throw new CollegueInvalideException("La personne doit avoir au moins 18 ans");
+		
+		String matriculeAAjouter = UUID.randomUUID().toString();
+		collegueAAjouter.setMatricule(matriculeAAjouter);
+		data.put(matriculeAAjouter, collegueAAjouter);
+		return collegueAAjouter;
 	}
 
 }
