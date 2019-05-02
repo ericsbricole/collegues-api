@@ -83,8 +83,8 @@ public class ColleguesApiApplicationTests {
 	public void testModifierEmailOK() throws CollegueInvalideException, CollegueNonTrouveException {
 		service.ajouterUnCollegue(collegue);
 		String expected = "toto@nouvelemail.com";
-		service.modifierEmail(collegue.getMatricule(), expected);
 		Mockito.when(collegueRepository.findById(collegue.getMatricule())).thenReturn(Optional.of(collegue));
+		service.modifierEmail(collegue.getMatricule(), expected);
 		
 		String actual = collegue.getEmail();
 		Assert.assertThat("L'email n'a pas été modifié en " + expected, actual, Matchers.is(expected));

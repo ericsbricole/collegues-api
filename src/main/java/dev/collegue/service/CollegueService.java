@@ -35,9 +35,11 @@ public class CollegueService {
 		this.collegueRepo = collegueRepo;
 		List<Collegue> collegues = new ArrayList<>();
 		collegues.add(new Collegue(UUID.randomUUID().toString(), "Astier", "Alexandre", "astier@kaamelot.com",
-				LocalDate.of(1980, 10, 11), "http://monsite.com/maphoto.jpg"));
+				LocalDate.of(1980, 10, 11), "https://www.savemybrain.net/v2/wp-content/uploads/2012/04/arthur.jpg"));
 		collegues.add(new Collegue(UUID.randomUUID().toString(), "Asterix", "Gaulois", "asterix@armorique.com",
-				LocalDate.of(1960, 01, 01), "http://village.com/maison.jpg"));
+				LocalDate.of(1960, 01, 01), "http://om1337.o.m.pic.centerblog.net/4w7h72p3.jpg"));
+		collegues.add(new Collegue(UUID.randomUUID().toString(), "Dark", "Vador", "vador@blackStar.com",
+				LocalDate.of(1960, 12, 05), "https://upload.wikimedia.org/wikipedia/en/thumb/7/76/Darth_Vader.jpg/220px-Darth_Vader.jpg"));
 		collegueRepo.saveAll(collegues);
 	}
 
