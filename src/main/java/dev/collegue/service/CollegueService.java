@@ -2,19 +2,13 @@ package dev.collegue.service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-
 import javax.transaction.Transactional;
-
 import org.apache.commons.lang3.StringUtils;
-import org.assertj.core.util.Arrays;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import dev.collegue.model.Collegue;
 import dev.collegue.repository.CollegueRepository;
 import exception.CollegueInvalideException;
