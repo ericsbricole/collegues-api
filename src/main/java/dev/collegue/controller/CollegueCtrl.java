@@ -56,8 +56,9 @@ public class CollegueCtrl {
 	}
 
 	@PostMapping
-	public void ajouterUnCollegue(@RequestBody Collegue collegueAAjouter) throws CollegueInvalideException {
-		service.ajouterUnCollegue(collegueAAjouter);
+	public ResponseEntity<Collegue> ajouterUnCollegue(@RequestBody Collegue collegueAAjouter) throws CollegueInvalideException {
+		Collegue collegueAjoute = service.ajouterUnCollegue(collegueAAjouter);
+		return ResponseEntity.status(HttpStatus.OK).body(collegueAjoute);
 	}
 
 	@PatchMapping(value = "/modifyEmail")
