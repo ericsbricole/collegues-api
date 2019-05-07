@@ -2,6 +2,7 @@ package dev.collegue.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -21,6 +22,9 @@ import org.springframework.web.bind.annotation.RestController;
 import dev.collegue.model.Collegue;
 import dev.collegue.model.CollegueAModifierEmail;
 import dev.collegue.model.CollegueAModifierPhotoUrl;
+import dev.collegue.model.CollegueNote;
+import dev.collegue.model.PhotoCollegue;
+import dev.collegue.service.CollegueNoteService;
 import dev.collegue.service.CollegueService;
 import exception.CollegueInvalideException;
 import exception.CollegueNonTrouveException;
@@ -32,6 +36,8 @@ public class CollegueCtrl {
 
 	@Autowired
 	private CollegueService service;
+	@Autowired
+	private CollegueNoteService noteService;
 
 	@GetMapping
 	public List<String> rechercherParNom(@RequestParam String nom) {
@@ -50,10 +56,6 @@ public class CollegueCtrl {
 		return ResponseEntity.status(HttpStatus.OK).body(collegueFound);
 	}
 
-	@ExceptionHandler(value = { CollegueNonTrouveException.class })
-	public ResponseEntity<String> handleCollegueNotFound() {
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Collegue non trouvé");
-	}
 
 	@PostMapping
 	public ResponseEntity<Collegue> ajouterUnCollegue(@RequestBody Collegue collegueAAjouter) throws CollegueInvalideException {
@@ -75,6 +77,30 @@ public class CollegueCtrl {
 		String newPhotoUrl = collegueAModif.getPhotoUrl();
 		Collegue modifiedCollegue = service.modifierPhotoUrl(collegueAModif.getMatricule(), newPhotoUrl);
 		return ResponseEntity.status(HttpStatus.OK).body(modifiedCollegue);
+	}
+	
+	@GetMapping("/photos")
+	public ResponseEntity<List<PhotoCollegue>> rechercherToutesLesPhotos() {
+		List<Collegue> collegues = service.rechercherToutesLesPhotos();
+		List<PhotoCollegue> photos = collegues.stream().map( col -> new PhotoCollegue(col.getMatricule(), col.getPhotoUrl())).collect( Collectors.toList() );
+		return ResponseEntity.status(HttpStatus.OK).body(photos);
+	}
+	
+	@PostMapping("/{matricule}/comments")
+	public ResponseEntity<CollegueNote> sauvegarderNote(@PathVariable String matricule, @RequestBody String note) throws CollegueNonTrouveException {
+		CollegueNote collegueNote = noteService.saveNote(matricule, note);
+		return ResponseEntity.status(HttpStatus.OK).body(collegueNote);
+	}
+	
+	@GetMapping("/{matricule}/comments")
+	public ResponseEntity<List<CollegueNote>> rechercherNotes(@PathVariable String matricule) throws CollegueNonTrouveException {
+		List<CollegueNote> collegueNote = noteService.rechercherNotes(matricule);
+		return ResponseEntity.status(HttpStatus.OK).body(collegueNote);
+	}
+	
+	@ExceptionHandler(value = { CollegueNonTrouveException.class })
+	public ResponseEntity<String> handleCollegueNotFound() {
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Collegue non trouvé");
 	}
 
 	@ExceptionHandler(value = { CollegueInvalideException.class })
