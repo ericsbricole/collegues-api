@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,6 +41,7 @@ public class CollegueCtrl {
 	private CollegueNoteService noteService;
 
 	@GetMapping
+	@Secured("USER")
 	public List<String> rechercherParNom(@RequestParam String nom) {
 		if (StringUtils.isEmpty(nom))
 			return new ArrayList<>();
@@ -50,20 +52,22 @@ public class CollegueCtrl {
 	}
 
 	@GetMapping(value = "/{matriculeRecherche}")
+	@Secured("USER")
 	public ResponseEntity<Collegue> rechercherParMatricule(@PathVariable String matriculeRecherche)
 			throws CollegueNonTrouveException {
 		Collegue collegueFound = service.rechercherParMatricule(matriculeRecherche);
 		return ResponseEntity.status(HttpStatus.OK).body(collegueFound);
 	}
 
-
 	@PostMapping
+	@Secured("ADMIN")
 	public ResponseEntity<Collegue> ajouterUnCollegue(@RequestBody Collegue collegueAAjouter) throws CollegueInvalideException {
 		Collegue collegueAjoute = service.ajouterUnCollegue(collegueAAjouter);
 		return ResponseEntity.status(HttpStatus.OK).body(collegueAjoute);
 	}
 
 	@PatchMapping(value = "/modifyEmail")
+	@Secured("ADMIN")
 	public ResponseEntity<Collegue> modifierEmail(@RequestBody CollegueAModifierEmail collegueAModif)
 			throws CollegueNonTrouveException, CollegueInvalideException {
 		String newEmail = collegueAModif.getEmail();
@@ -72,6 +76,7 @@ public class CollegueCtrl {
 	}
 
 	@PatchMapping(value = "/modifyPhotoUrl")
+	@Secured("ADMIN")
 	public ResponseEntity<Collegue> modifierPhotoUrl(@RequestBody CollegueAModifierPhotoUrl collegueAModif)
 			throws CollegueNonTrouveException, CollegueInvalideException {
 		String newPhotoUrl = collegueAModif.getPhotoUrl();
@@ -80,6 +85,7 @@ public class CollegueCtrl {
 	}
 	
 	@GetMapping("/photos")
+	@Secured("USER")
 	public ResponseEntity<List<PhotoCollegue>> rechercherToutesLesPhotos() {
 		List<Collegue> collegues = service.rechercherToutesLesPhotos();
 		List<PhotoCollegue> photos = collegues.stream().map( col -> new PhotoCollegue(col.getMatricule(), col.getPhotoUrl())).collect( Collectors.toList() );
@@ -87,12 +93,14 @@ public class CollegueCtrl {
 	}
 	
 	@PostMapping("/{matricule}/comments")
+	@Secured("ADMIN")
 	public ResponseEntity<CollegueNote> sauvegarderNote(@PathVariable String matricule, @RequestBody String note) throws CollegueNonTrouveException {
 		CollegueNote collegueNote = noteService.saveNote(matricule, note);
 		return ResponseEntity.status(HttpStatus.OK).body(collegueNote);
 	}
 	
 	@GetMapping("/{matricule}/comments")
+	@Secured("USER")
 	public ResponseEntity<List<CollegueNote>> rechercherNotes(@PathVariable String matricule) throws CollegueNonTrouveException {
 		List<CollegueNote> collegueNote = noteService.rechercherNotes(matricule);
 		return ResponseEntity.status(HttpStatus.OK).body(collegueNote);

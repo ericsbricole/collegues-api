@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import dev.collegue.model.Collegue;
@@ -36,6 +37,11 @@ public class CollegueNoteService {
 	public List<CollegueNote> rechercherNotes(String matricule) {
 		List<CollegueNote> collegueNotes = collegueNoteRepo.findByCollegueMatricule(matricule);
 		return collegueNotes;
+	}
+
+	public Collegue rechercherCollegueParEmail(String email) {
+		return collegueRepo.findByEmail(email).orElseThrow(
+				() -> new UsernameNotFoundException("Aucun collègue n'a été trouvé avec le mail " + email));
 	}
 
 }

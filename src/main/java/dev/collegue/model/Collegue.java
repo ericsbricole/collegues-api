@@ -1,13 +1,14 @@
 package dev.collegue.model;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "COLLEGUE")
@@ -26,6 +27,9 @@ public class Collegue {
 	private LocalDate dateDeNaissance;
 	@Column(name = "PHOTOURL")
 	private String photoUrl;
+	@ElementCollection(fetch = FetchType.EAGER)
+	@Column(name = "ROLES")
+	private List<String> roles;
 
 	public Collegue() {
 	}
@@ -38,6 +42,12 @@ public class Collegue {
 		this.email = email;
 		this.dateDeNaissance = dateDeNaissance;
 		this.photoUrl = photoUrl;
+	}
+
+	public Collegue(String matricule, String nom, String prenoms, String email, LocalDate dateDeNaissance,
+			String photoUrl, List<String> roles) {
+		this(matricule, nom, prenoms, email, dateDeNaissance, photoUrl);
+		this.roles = roles;
 	}
 
 	public String getMatricule() {
@@ -86,6 +96,14 @@ public class Collegue {
 
 	public void setPhotoUrl(String photoUrl) {
 		this.photoUrl = photoUrl;
+	}
+
+	public List<String> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(List<String> roles) {
+		this.roles = roles;
 	}
 
 }
