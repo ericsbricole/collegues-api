@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -30,17 +31,12 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
 	@Value("${jwt.secret}")
 	private String SECRET;
 
-	public JWTAuthorizationFilter() {
-		// TODO Auto-generated constructor stub
-	}
-
 	@Override
 	protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
 			throws ServletException, IOException {
-		// Recherche du jeton par Cookie
 		if (req.getCookies() != null) {
-			Stream.of(req.getCookies()).filter(cookie -> cookie.getName().equals(TOKEN_COOKIE))
-					.map(cookie -> cookie.getValue()).forEach(token -> {
+			Stream.of(req.getCookies()).filter(cookie -> cookie.getName().equals(TOKEN_COOKIE)).map(Cookie::getValue)
+					.forEach(token -> {
 						Claims body = Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token).getBody();
 
 						String username = body.getSubject();
@@ -50,12 +46,10 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
 
 						Authentication authentication = new UsernamePasswordAuthenticationToken(username, null, roles);
 						SecurityContextHolder.getContext().setAuthentication(authentication);
-
 					});
 		}
 
 		chain.doFilter(req, res);
-
 	}
 
 }

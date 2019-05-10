@@ -16,11 +16,12 @@ import exception.CollegueNonTrouveException;
 @Service
 public class CollegueNoteService {
 
+	@Autowired
 	private CollegueNoteRepository collegueNoteRepo;
+	@Autowired
 	private CollegueRepository collegueRepo;
 
-	public CollegueNoteService(@Autowired CollegueNoteRepository collegueNoteRepo,
-			@Autowired CollegueRepository collegueRepo) {
+	public CollegueNoteService(CollegueNoteRepository collegueNoteRepo, CollegueRepository collegueRepo) {
 		this.collegueNoteRepo = collegueNoteRepo;
 		this.collegueRepo = collegueRepo;
 	}

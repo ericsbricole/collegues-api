@@ -2,23 +2,23 @@ package dev.collegue.model;
 
 public class InfosAuthentification {
 	
-	private String matricule;
+	private String email;
 	private String password;
 
 	public InfosAuthentification() {
 	}
 	
-	public InfosAuthentification(String matricule, String password) {
-		this.matricule = matricule;
+	public InfosAuthentification(String email, String password) {
+		this.email = email;
 		this.password = password;
 	}
 
-	public String getMatricule() {
-		return matricule;
+	public String getEmail() {
+		return email;
 	}
 
-	public void setMatricule(String matricule) {
-		this.matricule = matricule;
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 	public String getPassword() {

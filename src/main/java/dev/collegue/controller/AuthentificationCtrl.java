@@ -33,9 +33,8 @@ import io.jsonwebtoken.Jwts;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/auth")
 public class AuthentificationCtrl {
-	
+
 	@Value("${jwt.expires_in}")
 	private Integer EXPIRES_IN;
 
@@ -55,32 +54,33 @@ public class AuthentificationCtrl {
 	}
 
 	@PostMapping(value = "/auth")
-	public ResponseEntity authentifier(@RequestBody InfosAuthentification infosAuthentification, HttpServletResponse response)
-			throws CollegueNonTrouveException {
+	public ResponseEntity authentifier(@RequestBody InfosAuthentification infosAuthentification,
+			HttpServletResponse response) throws CollegueNonTrouveException {
 		UsernamePasswordAuthenticationToken userNamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-				infosAuthentification.getMatricule(), infosAuthentification.getPassword());
+				infosAuthentification.getEmail(), infosAuthentification.getPassword());
 
-		 Authentication authentication = authenticationManager.authenticate(userNamePasswordAuthenticationToken);
-		 
-		 User user = (User) authentication.getPrincipal();
-		 
-		 String rolesListe = user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect( Collectors.joining(",") );
-		 
-		 Map<String, Object> supplementaryInfosToken = new HashMap<>();
-			supplementaryInfosToken.put("roles", rolesListe);
-			
-			String tokenJWT = Jwts.builder().setSubject(user.getUsername()).addClaims(supplementaryInfosToken)
-					.setExpiration(new Date(System.currentTimeMillis() + EXPIRES_IN * 1000))
-					.signWith(io.jsonwebtoken.SignatureAlgorithm.HS512, SECRET).compact();
-			
-			Cookie authCookie = new Cookie(TOKEN_COOKIE, SECRET);
-			authCookie.setHttpOnly(true);
-			authCookie.setMaxAge(EXPIRES_IN * 1000);
-			authCookie.setPath("/");
-			response.addCookie(authCookie);
+		Authentication authentication = authenticationManager.authenticate(userNamePasswordAuthenticationToken);
+
+		User user = (User) authentication.getPrincipal();
+
+		String rolesListe = user.getAuthorities().stream().map(GrantedAuthority::getAuthority)
+				.collect(Collectors.joining(","));
+
+		Map<String, Object> supplementaryInfosToken = new HashMap<>();
+		supplementaryInfosToken.put("roles", rolesListe);
+
+		String tokenJWT = Jwts.builder().setSubject(user.getUsername()).addClaims(supplementaryInfosToken)
+				.setExpiration(new Date(System.currentTimeMillis() + EXPIRES_IN * 1000))
+				.signWith(io.jsonwebtoken.SignatureAlgorithm.HS512, SECRET).compact();
+
+		Cookie authCookie = new Cookie(TOKEN_COOKIE, tokenJWT);
+		authCookie.setHttpOnly(true);
+		authCookie.setMaxAge(EXPIRES_IN * 1000);
+		authCookie.setPath("/");
+		response.addCookie(authCookie);
 		return ResponseEntity.ok().build();
 	}
-	
+
 	@ExceptionHandler(BadCredentialsException.class)
 	public ResponseEntity mauvaiseInfosConnexion(BadCredentialsException e) {
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

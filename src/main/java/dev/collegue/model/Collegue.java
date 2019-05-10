@@ -27,6 +27,8 @@ public class Collegue {
 	private LocalDate dateDeNaissance;
 	@Column(name = "PHOTOURL")
 	private String photoUrl;
+	@Column(name = "PASSWORD")
+	private String password;
 	@ElementCollection(fetch = FetchType.EAGER)
 	@Column(name = "ROLES")
 	private List<String> roles;
@@ -45,8 +47,9 @@ public class Collegue {
 	}
 
 	public Collegue(String matricule, String nom, String prenoms, String email, LocalDate dateDeNaissance,
-			String photoUrl, List<String> roles) {
+			String photoUrl, String password, List<String> roles) {
 		this(matricule, nom, prenoms, email, dateDeNaissance, photoUrl);
+		this.password = password;
 		this.roles = roles;
 	}
 
@@ -96,6 +99,14 @@ public class Collegue {
 
 	public void setPhotoUrl(String photoUrl) {
 		this.photoUrl = photoUrl;
+	}
+	
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 	public List<String> getRoles() {

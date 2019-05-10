@@ -11,9 +11,9 @@ import javax.transaction.Transactional;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import dev.collegue.model.Collegue;
-import dev.collegue.model.PhotoCollegue;
 import dev.collegue.repository.CollegueRepository;
 import exception.CollegueInvalideException;
 import exception.CollegueNonTrouveException;
@@ -26,32 +26,11 @@ public class CollegueService {
 	private final byte EMAIL_MIN_LENGTH = 3;
 	private final byte AGE_MIN = 18;
 
-	CollegueRepository collegueRepo;
-
 	@Autowired
+	private CollegueRepository collegueRepo;
+
 	public CollegueService(CollegueRepository collegueRepo) {
 		this.collegueRepo = collegueRepo;
-		List<Collegue> collegues = new ArrayList<>();
-		collegues.add(new Collegue(UUID.randomUUID().toString(), "Astier", "Alexandre", "astier@kaamelot.com",
-				LocalDate.of(1980, 10, 11), "https://www.savemybrain.net/v2/wp-content/uploads/2012/04/arthur.jpg",
-				Arrays.asList("USER")));
-		collegues.add(new Collegue(UUID.randomUUID().toString(), "Asterix", "Gaulois", "asterix@armorique.com",
-				LocalDate.of(1960, 01, 14), "http://om1337.o.m.pic.centerblog.net/4w7h72p3.jpg",
-				Arrays.asList("USER")));
-		collegues.add(new Collegue(UUID.randomUUID().toString(), "Dark", "Vador", "vador@blackStar.com",
-				LocalDate.of(1960, 12, 05), "https://reggiestake.files.wordpress.com/2012/06/darth-vader-3.jpeg",
-				Arrays.asList("USER")));
-		collegues.add(new Collegue(UUID.randomUUID().toString(), "Dark", "Sidious", "palpatine@empire.com",
-				LocalDate.of(1910, 12, 25), "https://i.ytimg.com/vi/HjMILwTcLsQ/maxresdefault.jpg",
-				Arrays.asList("ADMIN")));
-		collegues.add(new Collegue(UUID.randomUUID().toString(), "Dark", "Nihilus", "sion@marmiton.com",
-				LocalDate.of(1950, 05, 20),
-				"http://static.giantbomb.com/uploads/original/7/73953/1661864-darth_nihilus.jpg",
-				Arrays.asList("USER")));
-		collegues.add(new Collegue(UUID.randomUUID().toString(), "Dark", "Sion", "sion@vivelessith.com",
-				LocalDate.of(1950, 05, 20), "https://i.pinimg.com/564x/ed/bc/90/edbc90c6c9547e02c479ce246fd5300f.jpg",
-				Arrays.asList("USER")));
-		collegueRepo.saveAll(collegues);
 	}
 
 	public List<Collegue> rechercherParNom(String nomRecherche) {

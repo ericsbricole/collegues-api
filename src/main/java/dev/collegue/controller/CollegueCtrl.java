@@ -41,7 +41,7 @@ public class CollegueCtrl {
 	private CollegueNoteService noteService;
 
 	@GetMapping
-	@Secured("USER")
+	@Secured("ROLE_USER")
 	public List<String> rechercherParNom(@RequestParam String nom) {
 		if (StringUtils.isEmpty(nom))
 			return new ArrayList<>();
@@ -52,7 +52,7 @@ public class CollegueCtrl {
 	}
 
 	@GetMapping(value = "/{matriculeRecherche}")
-	@Secured("USER")
+	@Secured("ROLE_USER")
 	public ResponseEntity<Collegue> rechercherParMatricule(@PathVariable String matriculeRecherche)
 			throws CollegueNonTrouveException {
 		Collegue collegueFound = service.rechercherParMatricule(matriculeRecherche);
@@ -60,14 +60,14 @@ public class CollegueCtrl {
 	}
 
 	@PostMapping
-	@Secured("ADMIN")
+	@Secured("ROLE_ADMIN")
 	public ResponseEntity<Collegue> ajouterUnCollegue(@RequestBody Collegue collegueAAjouter) throws CollegueInvalideException {
 		Collegue collegueAjoute = service.ajouterUnCollegue(collegueAAjouter);
 		return ResponseEntity.status(HttpStatus.OK).body(collegueAjoute);
 	}
 
 	@PatchMapping(value = "/modifyEmail")
-	@Secured("ADMIN")
+	@Secured("ROLE_ADMIN")
 	public ResponseEntity<Collegue> modifierEmail(@RequestBody CollegueAModifierEmail collegueAModif)
 			throws CollegueNonTrouveException, CollegueInvalideException {
 		String newEmail = collegueAModif.getEmail();
@@ -76,7 +76,7 @@ public class CollegueCtrl {
 	}
 
 	@PatchMapping(value = "/modifyPhotoUrl")
-	@Secured("ADMIN")
+	@Secured("ROLE_ADMIN")
 	public ResponseEntity<Collegue> modifierPhotoUrl(@RequestBody CollegueAModifierPhotoUrl collegueAModif)
 			throws CollegueNonTrouveException, CollegueInvalideException {
 		String newPhotoUrl = collegueAModif.getPhotoUrl();
@@ -85,7 +85,7 @@ public class CollegueCtrl {
 	}
 	
 	@GetMapping("/photos")
-	@Secured("USER")
+	@Secured("ROLE_USER")
 	public ResponseEntity<List<PhotoCollegue>> rechercherToutesLesPhotos() {
 		List<Collegue> collegues = service.rechercherToutesLesPhotos();
 		List<PhotoCollegue> photos = collegues.stream().map( col -> new PhotoCollegue(col.getMatricule(), col.getPhotoUrl())).collect( Collectors.toList() );
@@ -93,14 +93,14 @@ public class CollegueCtrl {
 	}
 	
 	@PostMapping("/{matricule}/comments")
-	@Secured("ADMIN")
+	@Secured("ROLE_ADMIN")
 	public ResponseEntity<CollegueNote> sauvegarderNote(@PathVariable String matricule, @RequestBody String note) throws CollegueNonTrouveException {
 		CollegueNote collegueNote = noteService.saveNote(matricule, note);
 		return ResponseEntity.status(HttpStatus.OK).body(collegueNote);
 	}
 	
 	@GetMapping("/{matricule}/comments")
-	@Secured("USER")
+	@Secured("ROLE_USER")
 	public ResponseEntity<List<CollegueNote>> rechercherNotes(@PathVariable String matricule) throws CollegueNonTrouveException {
 		List<CollegueNote> collegueNote = noteService.rechercherNotes(matricule);
 		return ResponseEntity.status(HttpStatus.OK).body(collegueNote);

@@ -39,16 +39,23 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	public WebSecurityConfig() {
 	}
+	
+	public WebSecurityConfig(boolean disableDefaults) {
+		super(disableDefaults);
+	}
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.csrf().disable().authorizeRequests()
+		http.csrf().disable()
+		
+		.cors() .and().authorizeRequests()
 
 				.antMatchers(HttpMethod.GET, "/collegues/**").hasRole("USER")
 				.antMatchers(HttpMethod.PATCH, "/collegues/**").hasRole("ADMIN")
 				.antMatchers(HttpMethod.POST, "/collegues/**").hasRole("ADMIN")
+				.antMatchers(HttpMethod.POST, "/auth").permitAll()
 
-				.antMatchers("/h2-console/**").permitAll().antMatchers("/auth").permitAll()
+				.antMatchers("/h2-console/**").permitAll()
 
 				.and().addFilterBefore(jwtAuthorationFilter, UsernamePasswordAuthenticationFilter.class)
 
