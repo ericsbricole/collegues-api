@@ -27,32 +27,18 @@ public class ColleguesApiApplication {
 
 	@Autowired
 	private CollegueRepository colleguerespository;
-	
+
 	@Bean
-
 	public WebMvcConfigurer corsConfigurer() {
-
 		return new WebMvcConfigurer() {
-
+			
 			@Override
-
 			public void addCorsMappings(CorsRegistry registry) {
-
-				registry.addMapping("/**")
-
-						.allowedOrigins("*")
-
-						.allowedMethods("GET", "POST", "PATCH", "PUT", "OPTIONS")
-
+				registry.addMapping("/**").allowedOrigins("*").allowedMethods("GET", "POST", "PATCH", "PUT", "OPTIONS")
 						.allowCredentials(true);
-
-				;
-
 			}
-
 		};
-
-}
+	}
 
 	@EventListener(ContextRefreshedEvent.class)
 	public void init() {

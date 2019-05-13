@@ -17,9 +17,11 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -54,7 +56,7 @@ public class AuthentificationCtrl {
 	}
 
 	@PostMapping(value = "/auth")
-	public ResponseEntity authentifier(@RequestBody InfosAuthentification infosAuthentification,
+	public ResponseEntity<?> authentifier(@RequestBody InfosAuthentification infosAuthentification,
 			HttpServletResponse response) throws CollegueNonTrouveException {
 		UsernamePasswordAuthenticationToken userNamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
 				infosAuthentification.getEmail(), infosAuthentification.getPassword());
@@ -79,6 +81,13 @@ public class AuthentificationCtrl {
 		authCookie.setPath("/");
 		response.addCookie(authCookie);
 		return ResponseEntity.ok().build();
+	}
+	
+	@GetMapping("/me")
+	public ResponseEntity<Collegue> me() throws CollegueNonTrouveException {
+		String email = SecurityContextHolder.getContext().getAuthentication().getName();
+		Collegue collegueCo = collegueRepository.findByEmail(email).orElseThrow( () -> new CollegueNonTrouveException("Le collegue connecte " + email + " n'a pas été retrouvé en base") );
+		return ResponseEntity.status(HttpStatus.OK).body(collegueCo);
 	}
 
 	@ExceptionHandler(BadCredentialsException.class)
