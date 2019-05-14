@@ -42,12 +42,11 @@ public class CollegueCtrl {
 
 	@GetMapping
 	@Secured("ROLE_USER")
-	public List<String> rechercherParNom(@RequestParam String nom) {
+	public List<String> rechercherParNom(@RequestParam String nom) throws CollegueNonTrouveException {
 		if (StringUtils.isEmpty(nom))
 			return new ArrayList<>();
 		else {
-			return service.rechercherParNom(nom).stream().filter(c -> c.getNom().equals(nom))
-					.map(Collegue::getMatricule).collect(Collectors.toList());
+			return service.rechercherParNom(nom).stream().map(Collegue::getMatricule).collect(Collectors.toList());
 		}
 	}
 
@@ -61,7 +60,8 @@ public class CollegueCtrl {
 
 	@PostMapping
 	@Secured("ROLE_ADMIN")
-	public ResponseEntity<Collegue> ajouterUnCollegue(@RequestBody Collegue collegueAAjouter) throws CollegueInvalideException {
+	public ResponseEntity<Collegue> ajouterUnCollegue(@RequestBody Collegue collegueAAjouter)
+			throws CollegueInvalideException {
 		Collegue collegueAjoute = service.ajouterUnCollegue(collegueAAjouter);
 		return ResponseEntity.status(HttpStatus.OK).body(collegueAjoute);
 	}
@@ -83,29 +83,30 @@ public class CollegueCtrl {
 		Collegue modifiedCollegue = service.modifierPhotoUrl(collegueAModif.getMatricule(), newPhotoUrl);
 		return ResponseEntity.status(HttpStatus.OK).body(modifiedCollegue);
 	}
-	
+
 	@GetMapping("/photos")
 	@Secured("ROLE_USER")
 	public ResponseEntity<List<PhotoCollegue>> rechercherToutesLesPhotos() {
-		List<Collegue> collegues = service.rechercherToutesLesPhotos();
-		List<PhotoCollegue> photos = collegues.stream().map( col -> new PhotoCollegue(col.getMatricule(), col.getPhotoUrl())).collect( Collectors.toList() );
+		List<PhotoCollegue> photos= service.rechercherToutesLesPhotos();
 		return ResponseEntity.status(HttpStatus.OK).body(photos);
 	}
-	
+
 	@PostMapping("/{matricule}/comments")
 	@Secured("ROLE_ADMIN")
-	public ResponseEntity<CollegueNote> sauvegarderNote(@PathVariable String matricule, @RequestBody String note) throws CollegueNonTrouveException {
+	public ResponseEntity<CollegueNote> sauvegarderNote(@PathVariable String matricule, @RequestBody String note)
+			throws CollegueNonTrouveException {
 		CollegueNote collegueNote = noteService.saveNote(matricule, note);
 		return ResponseEntity.status(HttpStatus.OK).body(collegueNote);
 	}
-	
+
 	@GetMapping("/{matricule}/comments")
 	@Secured("ROLE_USER")
-	public ResponseEntity<List<CollegueNote>> rechercherNotes(@PathVariable String matricule) throws CollegueNonTrouveException {
+	public ResponseEntity<List<CollegueNote>> rechercherNotes(@PathVariable String matricule)
+			throws CollegueNonTrouveException {
 		List<CollegueNote> collegueNote = noteService.rechercherNotes(matricule);
 		return ResponseEntity.status(HttpStatus.OK).body(collegueNote);
 	}
-	
+
 	@ExceptionHandler(value = { CollegueNonTrouveException.class })
 	public ResponseEntity<String> handleCollegueNotFound() {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Collegue non trouvé");

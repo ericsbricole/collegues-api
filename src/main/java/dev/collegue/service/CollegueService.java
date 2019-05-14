@@ -6,6 +6,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
+
 import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.NotImplementedException;
@@ -14,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import dev.collegue.model.Collegue;
+import dev.collegue.model.PhotoCollegue;
 import dev.collegue.repository.CollegueRepository;
 import exception.CollegueInvalideException;
 import exception.CollegueNonTrouveException;
@@ -33,8 +36,8 @@ public class CollegueService {
 		this.collegueRepo = collegueRepo;
 	}
 
-	public List<Collegue> rechercherParNom(String nomRecherche) {
-		return collegueRepo.findAll();
+	public List<Collegue> rechercherParNom(String nomRecherche) throws CollegueNonTrouveException {
+		return collegueRepo.findByNom(nomRecherche).orElseThrow( () -> new CollegueNonTrouveException("pas de collegue trouvé de nom " + nomRecherche) );
 	}
 
 	public Collegue rechercherParMatricule(String matriculeRecherche) throws CollegueNonTrouveException {
@@ -87,9 +90,9 @@ public class CollegueService {
 		throw new NotImplementedException("this method is not implemented yet");
 	}
 
-	public List<Collegue> rechercherToutesLesPhotos() {
-		return collegueRepo.findAll();
-
+	public List<PhotoCollegue> rechercherToutesLesPhotos() {
+		return collegueRepo.findAll().stream().map( c -> new PhotoCollegue(c.getMatricule(), c.getPhotoUrl())).collect(Collectors.toList());
 	}
+	
 
 }
